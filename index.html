@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>MyUcchii — Skins</title>
+  <meta name="description" content="Galeria de skins estilo MyUcchii — pronto para GitHub Pages" />
+  <style>
+    :root{--bg:#0f1724;--card:#0b1220;--muted:#9aa4b2;--accent:#8b5cf6}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial; background:linear-gradient(180deg,var(--bg),#071022);color:#e6eef6}
+    header{padding:20px 24px;display:flex;gap:12px;align-items:center;justify-content:space-between}
+    .logo{display:flex;align-items:center;gap:12px}
+    .logo div{width:44px;height:44px;border-radius:8px;background:linear-gradient(135deg,var(--accent),#06b6d4);display:flex;align-items:center;justify-content:center;font-weight:700}
+    h1{font-size:18px;margin:0}
+    .controls{display:flex;gap:8px;align-items:center}
+    input[type=search]{padding:8px 12px;border-radius:10px;border:0;background:#081226;color:inherit;outline:2px solid transparent}
+    select{padding:8px 10px;border-radius:10px;border:0;background:#081226}
+    main{padding:18px}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px}
+    .card{background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);border-radius:12px;padding:10px;cursor:pointer;transition:transform .14s ease,box-shadow .14s ease}
+    .card:hover{transform:translateY(-6px);box-shadow:0 10px 30px rgba(2,6,23,0.6)}
+    .thumb{width:100%;height:140px;background:#021027;border-radius:8px;display:flex;align-items:center;justify-content:center;overflow:hidden}
+    .thumb img{width:100%;height:100%;object-fit:cover}
+    .meta{display:flex;align-items:center;justify-content:space-between;margin-top:8px}
+    .meta .title{font-size:13px;font-weight:600}
+    .meta .sub{font-size:12px;color:var(--muted)}
+    /* modal */
+    .modal{position:fixed;inset:0;background:rgba(2,6,23,0.7);display:none;align-items:center;justify-content:center;padding:24px}
+    .modal.open{display:flex}
+    .viewer{max-width:1100px;width:100%;background:var(--card);padding:18px;border-radius:12px;display:grid;grid-template-columns:1fr 320px;gap:12px}
+    .viewer img{width:100%;height:70vh;object-fit:contain;border-radius:8px;background:#071229}
+    .side{padding:4px}
+    .side h3{margin:0 0 8px 0}
+    .btn{display:inline-block;padding:8px 10px;border-radius:8px;background:linear-gradient(90deg,var(--accent),#06b6d4);color:#021022;font-weight:700;text-decoration:none}
+    footer{padding:18px;text-align:center;color:var(--muted)}
+    @media (max-width:900px){.viewer{grid-template-columns:1fr;}
+      .viewer img{height:50vh}
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">
+      <div>MU</div>
+      <div>
+        <h1>MyUcchii — Skins</h1>
+        <div style="font-size:12px;color:var(--muted)">Galeria estática pronta para GitHub Pages</div>
+      </div>
+    </div>
+    <div class="controls">
+      <input id="q" type="search" placeholder="procurar skins, autor..." />
+      <select id="filter">
+        <option value="all">Todos</option>
+        <option value="dark">Dark</option>
+        <option value="neon">Neon</option>
+        <option value="minimal">Minimal</option>
+      </select>
+    </div>
+  </header>
+
+  <main>
+    <section id="gallery">
+      <div id="grid" class="grid"></div>
+      <div id="loading" style="text-align:center;padding:18px;color:var(--muted)">Carregando...</div>
+    </section>
+  </main>
+
+  <div id="modal" class="modal" role="dialog" aria-hidden="true">
+    <div class="viewer" role="document">
+      <img id="modalImg" src="" alt="preview" />
+      <div class="side">
+        <h3 id="modalTitle">Título</h3>
+        <div id="modalAuthor" style="color:var(--muted)">Autor</div>
+        <p id="modalDesc" style="margin-top:10px;color:var(--muted);font-size:13px">Descrição</p>
+        <div style="margin-top:14px;display:flex;gap:8px">
+          <a id="downloadBtn" class="btn" href="#" download>Download</a>
+          <a id="viewRaw" class="btn" href="#" target="_blank">Abrir imagem</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>Feito para GitHub Pages • Edite <code>skins.json</code> ou o array no script para adicionar skins</footer>
+
+  <script>
+    // ---------- CONFIG ----------
+    // Você pode substituir este array por um arquivo JSON em /data/skins.json
+    // Exemplo de skins.json: [{"id":"id-1","title":"Skin A","author":"h","tags":["dark"],"thumb":"/images/skin-a-thumb.jpg","image":"/images/skin-a.png","desc":"descrição"}]
+
+    const SKINS = [
+      {id:'s1',title:'Dark Neon',author:'hiro',tags:['dark','neon'],thumb:'https://placehold.co/640x360/071226/ffffff?text=Dark+Neon',image:'https://placehold.co/1280x720/071226/ffffff?text=Dark+Neon',desc:'Skin escura com toques neon.'},
+      {id:'s2',title:'Minimal White',author:'yuki',tags:['minimal'],thumb:'https://placehold.co/640x360/ffffff/071226?text=Minimal',image:'https://placehold.co/1280x720/ffffff/071226?text=Minimal',desc:'Limpa e simples.'},
+      {id:'s3',title:'Aesthetic Purple',author:'mika',tags:['neon'],thumb:'https://placehold.co/640x360/5b21b6/ffffff?text=Purple',image:'https://placehold.co/1280x720/5b21b6/ffffff?text=Purple',desc:'Rosa e roxo estéticos.'},
+      // adicione mais items ou use skins.json
+    ];
+
+    // ---------- STATE ----------
+    let items = [];
+    let loaded = 0;
+    const PAGE_SIZE = 12;
+
+    const grid = document.getElementById('grid');
+    const loadingEl = document.getElementById('loading');
+    const q = document.getElementById('q');
+    const filter = document.getElementById('filter');
+
+    // tenta carregar /data/skins.json (se você enviar para o repo)
+    async function fetchRemote() {
+      try {
+        const resp = await fetch('./data/skins.json', {cache:'no-cache'});
+        if(!resp.ok) throw new Error('no remote');
+        const json = await resp.json();
+        return json;
+      } catch (e) {
+        return null;
+      }
+    }
+
+    async function init(){
+      const remote = await fetchRemote();
+      items = remote && Array.isArray(remote) ? remote : SKINS;
+      renderMore();
+      setupEvents();
+      loadingEl.style.display = 'none';
+    }
+
+    function cardHtml(item){
+      const el = document.createElement('div');
+      el.className = 'card';
+      el.tabIndex = 0;
+      el.innerHTML = `
+        <div class="thumb"><img loading="lazy" src="${item.thumb}" alt="${escapeHtml(item.title)}"/></div>
+        <div class="meta">
+          <div>
+            <div class="title">${escapeHtml(item.title)}</div>
+            <div class="sub">${escapeHtml(item.author)}</div>
+          </div>
+          <div style="text-align:right;font-size:12px;color:var(--muted)">${(item.tags||[]).slice(0,1).join(', ')}</div>
+        </div>
+      `;
+      el.addEventListener('click',()=>openModal(item));
+      return el;
+    }
+
+    function escapeHtml(s){return String(s||'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;');}
+
+    function renderMore(){
+      const filtered = applyFilter(items);
+      const slice = filtered.slice(loaded, loaded + PAGE_SIZE);
+      slice.forEach(it => grid.appendChild(cardHtml(it)));
+      loaded += slice.length;
+      if(loaded >= filtered.length){
+        loadingEl.style.display = 'none';
+      } else {
+        loadingEl.style.display = 'block';
+      }
+    }
+
+    function resetAndRender(){
+      grid.innerHTML = '';
+      loaded = 0;
+      renderMore();
+    }
+
+    function applyFilter(list){
+      const qv = q.value.trim().toLowerCase();
+      const tag = filter.value;
+      return list.filter(it=>{
+        if(tag!=='all' && !(it.tags||[]).includes(tag)) return false;
+        if(qv==='') return true;
+        return (it.title+" "+it.author+" "+(it.desc||'')).toLowerCase().includes(qv);
+      });
+    }
+
+    // infinite scroll
+    window.addEventListener('scroll', ()=>{
+      if(window.innerHeight + window.scrollY + 200 >= document.body.offsetHeight){
+        renderMore();
+      }
+    });
+
+    function setupEvents(){
+      q.addEventListener('input', debounce(resetAndRender, 220));
+      filter.addEventListener('change', resetAndRender);
+      document.getElementById('modal').addEventListener('click', (e)=>{
+        if(e.target.id==='modal' || e.target.id==='modalImg') closeModal();
+      });
+      document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closeModal(); });
+    }
+
+    // modal
+    function openModal(item){
+      const modal = document.getElementById('modal');
+      document.getElementById('modalImg').src = item.image || item.thumb;
+      document.getElementById('modalTitle').textContent = item.title;
+      document.getElementById('modalAuthor').textContent = item.author || '';
+      document.getElementById('modalDesc').textContent = item.desc || '';
+      const dl = document.getElementById('downloadBtn'); dl.href = item.image || item.thumb; dl.download = item.title.replace(/\s+/g,'_') + '.png';
+      document.getElementById('viewRaw').href = item.image || item.thumb;
+      modal.classList.add('open'); modal.setAttribute('aria-hidden','false');
+    }
+    function closeModal(){const modal=document.getElementById('modal');modal.classList.remove('open');modal.setAttribute('aria-hidden','true');}
+
+    // small utility
+    function debounce(fn,ms=200){let t; return (...a)=>{clearTimeout(t);t=setTimeout(()=>fn(...a),ms);};}
+
+    // try init
+    init();
+  </script>
+</body>
+</html>
