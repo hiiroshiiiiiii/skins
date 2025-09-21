@@ -1,65 +1,457 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Skins</title>
-  <style>
-    :root{--bg:#0f1724;--card:#0b1220;--accent:#8b5cf6}
-    *{box-sizing:border-box;margin:0;padding:0}
-    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial; background:var(--bg);color:#fff}
-    header{padding:20px;display:flex;align-items:center;justify-content:center}
-    .logo{font-size:20px;font-weight:700;color:var(--accent)}
-    main{padding:20px}
-    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px}
-    .card{background:var(--card);border-radius:12px;overflow:hidden;cursor:pointer;transition:transform .15s ease, box-shadow .15s ease}
-    .card:hover{transform:scale(1.03);box-shadow:0 6px 20px rgba(0,0,0,.6)}
-    .thumb img{width:100%;height:100%;object-fit:cover;display:block}
-    .modal{position:fixed;inset:0;background:rgba(0,0,0,0.8);display:none;align-items:center;justify-content:center;padding:24px;z-index:50}
-    .modal.open{display:flex}
-    .viewer{max-width:90vw;max-height:90vh}
-    .viewer img{width:100%;height:100%;object-fit:contain;border-radius:8px}
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skins Minecraft</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background-color: #1a1a2e;
+            font-family: 'Segoe UI', sans-serif;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .skins-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 16px;
+        }
+        
+        .skin-card {
+            background-color: #262645;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            aspect-ratio: 3/4;
+        }
+        
+        .skin-card:hover {
+            transform: translateY(-5px) scale(1.03);
+            box-shadow: 0 12px 20px rgba(0, 0, 0, 0.4);
+        }
+        
+        .skin-img {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .skin-img::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(78, 204, 163, 0.2), rgba(42, 157, 143, 0.2));
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: 1;
+        }
+        
+        .skin-card:hover .skin-img::before {
+            opacity: 1;
+        }
+        
+        .skin-preview {
+            width: 100px;
+            height: 150px;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.5s;
+        }
+        
+        .skin-card:hover .skin-preview {
+            transform: rotateY(15deg) rotateX(5deg);
+        }
+        
+        .skin-front {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, #4ecca3, #2c9c7c);
+            border-radius: 5px;
+            backface-visibility: hidden;
+        }
+        
+        .skin-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, #2c9c7c, #4ecca3);
+            border-radius: 5px;
+            transform: rotateY(180deg);
+            backface-visibility: hidden;
+        }
+        
+        /* Efeito de seleção */
+        .skin-card:active {
+            transform: scale(0.95);
+        }
+        
+        /* Barra de pesquisa minimalista */
+        .search-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 100;
+        }
+        
+        .search-box {
+            width: 40px;
+            height: 40px;
+            background: #262645;
+            border-radius: 50%;
+            position: relative;
+            transition: all 0.5s;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .search-box:hover {
+            width: 200px;
+            border-radius: 20px;
+        }
+        
+        .search-input {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: transparent;
+            padding: 10px 50px 10px 20px;
+            color: white;
+            font-size: 16px;
+            outline: none;
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+        
+        .search-box:hover .search-input {
+            opacity: 1;
+        }
+        
+        .search-btn {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #4ecca3;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
+        
+        .search-btn::before {
+            content: '';
+            width: 15px;
+            height: 15px;
+            border: 2px solid white;
+            border-radius: 50%;
+            position: relative;
+            transform: translate(-2px, -2px);
+        }
+        
+        .search-btn::after {
+            content: '';
+            width: 2px;
+            height: 8px;
+            background: white;
+            position: absolute;
+            transform: rotate(45deg) translate(8px, 8px);
+        }
+        
+        /* Filtro por categoria (ícones) */
+        .filters {
+            position: fixed;
+            top: 70px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            z-index: 100;
+        }
+        
+        .filter-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #262645;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .filter-btn:hover {
+            background: #4ecca3;
+            transform: scale(1.1);
+        }
+        
+        .filter-btn svg {
+            width: 20px;
+            height: 20px;
+            fill: white;
+        }
+        
+        /* Efeito de loading nas skins */
+        .skin-card {
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Responsividade */
+        @media (max-width: 768px) {
+            .skins-grid {
+                grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+                gap: 12px;
+            }
+            
+            .skin-preview {
+                width: 80px;
+                height: 120px;
+            }
+            
+            .search-box:hover {
+                width: 180px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            body {
+                padding: 15px;
+            }
+            
+            .skins-grid {
+                grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+                gap: 10px;
+            }
+            
+            .skin-preview {
+                width: 70px;
+                height: 105px;
+            }
+            
+            .search-container {
+                top: 15px;
+                right: 15px;
+            }
+            
+            .filters {
+                top: 65px;
+                right: 15px;
+            }
+        }
+    </style>
 </head>
 <body>
-  <header>
-    <div class="logo">Skins</div>
-  </header>
+    <div class="container">
+        <div class="skins-grid">
+            <!-- Skin 1 -->
+            <div class="skin-card">
+                <div class="skin-img">
+                    <div class="skin-preview">
+                        <div class="skin-front"></div>
+                        <div class="skin-back"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Skin 2 -->
+            <div class="skin-card">
+                <div class="skin-img">
+                    <div class="skin-preview">
+                        <div class="skin-front"></div>
+                        <div class="skin-back"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Skin 3 -->
+            <div class="skin-card">
+                <div class="skin-img">
+                    <div class="skin-preview">
+                        <div class="skin-front"></div>
+                        <div class="skin-back"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Skin 4 -->
+            <div class="skin-card">
+                <div class="skin-img">
+                    <div class="skin-preview">
+                        <div class="skin-front"></div>
+                        <div class="skin-back"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Skin 5 -->
+            <div class="skin-card">
+                <div class="skin-img">
+                    <div class="skin-preview">
+                        <div class="skin-front"></div>
+                        <div class="skin-back"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Skin 6 -->
+            <div class="skin-card">
+                <div class="skin-img">
+                    <div class="skin-preview">
+                        <div class="skin-front"></div>
+                        <div class="skin-back"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Skin 7 -->
+            <div class="skin-card">
+                <div class="skin-img">
+                    <div class="skin-preview">
+                        <div class="skin-front"></div>
+                        <div class="skin-back"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Skin 8 -->
+            <div class="skin-card">
+                <div class="skin-img">
+                    <div class="skin-preview">
+                        <div class="skin-front"></div>
+                        <div class="skin-back"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Skin 9 -->
+            <div class="skin-card">
+                <div class="skin-img">
+                    <div class="skin-preview">
+                        <div class="skin-front"></div>
+                        <div class="skin-back"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Skin 10 -->
+            <div class="skin-card">
+                <div class="skin-img">
+                    <div class="skin-preview">
+                        <div class="skin-front"></div>
+                        <div class="skin-back"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Skin 11 -->
+            <div class="skin-card">
+                <div class="skin-img">
+                    <div class="skin-preview">
+                        <div class="skin-front"></div>
+                        <div class="skin-back"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Skin 12 -->
+            <div class="skin-card">
+                <div class="skin-img">
+                    <div class="skin-preview">
+                        <div class="skin-front"></div>
+                        <div class="skin-back"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Barra de pesquisa -->
+    <div class="search-container">
+        <div class="search-box">
+            <input type="text" class="search-input" placeholder="">
+            <div class="search-btn"></div>
+        </div>
+    </div>
+    
+    <!-- Filtros por categoria -->
+    <div class="filters">
+        <div class="filter-btn">
+            <svg viewBox="0 0 24 24">
+                <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z"/>
+            </svg>
+        </div>
+        <div class="filter-btn">
+            <svg viewBox="0 0 24 24">
+                <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z"/>
+            </svg>
+        </div>
+        <div class="filter-btn">
+            <svg viewBox="0 0 24 24">
+                <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z"/>
+            </svg>
+        </div>
+    </div>
 
-  <main>
-    <div id="grid" class="grid"></div>
-  </main>
-
-  <div id="modal" class="modal" role="dialog" aria-hidden="true">
-    <div class="viewer"><img id="modalImg" src="" alt="preview" /></div>
-  </div>
-
-  <script>
-    const SKINS = [
-      {id:'s1',thumb:'https://placehold.co/600x400/071226/ffffff?text=Dark+Neon',image:'https://placehold.co/1280x720/071226/ffffff?text=Dark+Neon'},
-      {id:'s2',thumb:'https://placehold.co/600x400/ffffff/071226?text=Minimal',image:'https://placehold.co/1280x720/ffffff/071226?text=Minimal'},
-      {id:'s3',thumb:'https://placehold.co/600x400/5b21b6/ffffff?text=Purple',image:'https://placehold.co/1280x720/5b21b6/ffffff?text=Purple'}
-    ];
-
-    const grid = document.getElementById('grid');
-    function card(item){
-      const el=document.createElement('div');
-      el.className='card';
-      el.innerHTML=`<div class="thumb"><img src="${item.thumb}" alt=""/></div>`;
-      el.addEventListener('click',()=>openModal(item));
-      return el;
-    }
-    SKINS.forEach(it=>grid.appendChild(card(it)));
-
-    function openModal(item){
-      document.getElementById('modalImg').src=item.image||item.thumb;
-      const modal=document.getElementById('modal');
-      modal.classList.add('open');
-      modal.setAttribute('aria-hidden','false');
-    }
-    function closeModal(){const modal=document.getElementById('modal');modal.classList.remove('open');modal.setAttribute('aria-hidden','true');}
-    document.getElementById('modal').addEventListener('click',closeModal);
-    document.addEventListener('keydown',e=>{if(e.key==='Escape') closeModal();});
-  </script>
+    <script>
+        // Efeito de carregamento progressivo
+        document.addEventListener('DOMContentLoaded', function() {
+            const skinCards = document.querySelectorAll('.skin-card');
+            
+            // Adiciona delay progressivo para a animação de cada card
+            skinCards.forEach((card, index) => {
+                card.style.animationDelay = `${index * 0.05}s`;
+            });
+            
+            // Simula clique para baixar a skin
+            skinCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    this.style.transform = 'scale(0.9)';
+                    setTimeout(() => {
+                        this.style.transform = '';
+                    }, 200);
+                });
+            });
+            
+            // Interação com os filtros
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            filterButtons.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    this.classList.toggle('active');
+                });
+            });
+        });
+    </script>
 </body>
 </html>
